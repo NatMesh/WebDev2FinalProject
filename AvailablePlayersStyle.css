@@ -1,0 +1,27 @@
+table{
+font-family: 'Open Sans', sans-serif;
+border-collapse: collapse;
+width: 100%;
+}
+
+tr:nth-child(even){
+	background-color: #dddddd;
+}
+
+td, th{
+	padding: 8px;
+	border: 1px solid #dddddd;
+	text-align: left;
+}
+
+h1{
+	text-align: center;
+}
+
+h4{
+	color: black;
+}
+
+td>h4>a{
+	color: black;
+}
