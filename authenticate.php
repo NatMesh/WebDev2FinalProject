@@ -1,6 +1,6 @@
 <!-- Brings up a prompt to have the user sign in to gain authenticated priviledges. -->
 <?php
-	include 'connect2.php';
+	include 'header.php';
 
 	$userSignIn = filter_input(INPUT_POST, 'emailAddress', FILTER_SANITIZE_EMAIL);
 
@@ -9,6 +9,8 @@
 	$isLoginInfoBlank = false;
 
 	$isLoginIncorrect = false;
+
+	$isLoginCorrent = false;
 
 	if(isset($_POST['SignIn'])){
 		if(strlen($userSignIn) == 0 || strlen($passSignIn) == 0){
@@ -21,20 +23,21 @@
 
 			$statement->execute();
 
+			$user = $statement->fetch();
+
 			$count = $statement->rowCount();
 
 			if($count == 1){
-				$_SESSION['firstName'] = $query['firstName'];
-				$_SESSION['userID'] = $query['userID'];
-
-				header('Location: HomePage.php');
-				exit();
+				$_SESSION['firstName'] = $user['firstName'];
+				$_SESSION['userID'] = $user['userID'];
+				$_SESSION['admin'] = $user['admin'];
+				$isLoginCorrent = true;
 			}
 			else{
 				$isLoginIncorrect = true;
 			}
 
-			
+			header('Location: HomePage.php');
 		}
 	}
 	
@@ -52,7 +55,13 @@
 		<p>
 			Information was missing.  
 		</p>
-		<a href="HomePage.php">Return Home</a>
+	<?php endif ?>
+
+	<?php if($isLoginCorrent): ?>
+		<h1>YOU IN!</h1>
+		<p>
+			Welcome <?= $user['firstName']  ?>
+		</p>
 	<?php endif ?>
 
 	<?php if($isLoginIncorrect): ?>
@@ -60,7 +69,6 @@
 		<p>
 			 Invalid Email Address or Password!
 		</p>
-		<a href="HomePage.php">Return Home</a>
 	<?php endif ?>
 </body>
 </html>
