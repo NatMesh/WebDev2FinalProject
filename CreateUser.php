@@ -1,6 +1,6 @@
 <!-- Displays a create user page where someone can sign up and create an account on this website. -->
 <?php 
-
+	include 'header.php';
 ?>
 
 <!DOCTYPE html>
