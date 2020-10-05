@@ -1,9 +1,15 @@
+<?php 
+	include 'header.php';
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
 	<title>Sign Up</title>
 </head>
 <body>
+	<h1>Sign in if you have an existing account.</h1>
+	
 	<form action="authenticate.php" method="POST">
 		<fieldset>
 			<p>

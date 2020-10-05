@@ -1,0 +1,47 @@
+table{
+font-family: 'Open Sans', sans-serif;
+border-collapse: collapse;
+width: 100%;
+}
+
+tr:nth-child(even){
+	background-color: #dddddd;
+}
+
+td, th{
+	padding: 8px;
+	border: 1px solid #dddddd;
+	text-align: left;
+}
+
+h1{
+	text-align: center;
+}
+
+td>h4>a{
+	color: black;
+}
+
+h5>a{
+	color: black;
+	text-decoration: underline;
+}
+
+.seperate_comments{
+	padding-bottom: 15px;
+}
+
+label{
+	display: block;
+}
+
+main{
+	display: flex;
+	flex-direction: column;
+}
+	.userInfo{
+		display: flex;
+		justify-content: space-between;
+		width: 60%;
+	}
+

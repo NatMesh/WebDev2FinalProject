@@ -25,3 +25,7 @@ h4{
 td>h4>a{
 	color: black;
 }
+
+tr>th>a{
+	color: pink;
+}

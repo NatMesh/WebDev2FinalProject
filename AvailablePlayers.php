@@ -7,6 +7,21 @@
 
 	$userCanAddPlayers = false;
 
+	$orderValue = filter_input(INPUT_GET, 'orderValue', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+	$isOrderValuePassed = true;
+
+	if (is_null($orderValue)) {
+		$isOrderValuePassed = false;
+	}
+
+	//We can concatenate the wild cards % that will let us search for a name that has the search value in any position. 
+		//You tried to pass it as one string into the query but nothing was returned because it was searching for the % symbols as well.
+	$userSearch = '%' . filter_input(INPUT_POST, 'searchValue', FILTER_SANITIZE_FULL_SPECIAL_CHARS) . '%';
+
+	//Search value based on player catagory
+	$playerPosition = filter_input(INPUT_POST, 'positions', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
 	//Query to check if a user has created a fantasy team before trying to add players.
 	$query3 = "SELECT * FROM userfantasyteam WHERE userId = :userID";
 	$statement3 = $db->prepare($query3);
@@ -35,10 +50,59 @@
 	}
 	else if($userFantasyTeamCount != 1){
 		$isTeamNotCreated = true;
-		var_dump($isTeamNotCreated);
 	}
 	else if($teamPlayersCount >= 11){
 		$isTeamMaxPlayers = true;
+	}
+	else if(isset($_POST['Search'])){
+		//Creates a players table based on the users search
+		$query4 = "SELECT * FROM nbaplayers WHERE NAME LIKE :userSearch AND POS =  :position";
+
+		//INCLUDE INTERNAL IF STATEMENTS TO CONCAT FOR MORE SPECIFIC SEARCH.
+
+		$statement4 = $db->prepare($query4);
+
+		$statement4 -> bindValue(':userSearch', $userSearch);
+
+		$statement4 -> bindValue(':position', $playerPosition);
+		$statement4 -> execute();
+
+		$players = $statement4->fetchAll();
+
+		$userCanAddPlayers = true;
+	}
+	else if ($isOrderValuePassed){
+		$query = "SELECT * FROM nbaplayers WHERE userID = 0 AND isAvailable = 0 ORDER BY";
+
+		if($orderValue == 'PTS')
+		{
+			$query .= ' PTS DESC';
+		}
+
+
+		if($orderValue == 'REB')
+		{
+			$query .= ' REB DESC';
+		}
+
+		if($orderValue == 'AST')
+		{
+			$query .= ' AST DESC';
+		}
+
+
+		
+
+		$statement = $db->prepare($query);
+
+		$statement -> bindValue(':orderValue', $orderValue);
+
+		$statement->execute();
+
+		$players = $statement->fetchAll();
+
+
+		$userCanAddPlayers = true;
 	}
 	else{
 		//This query will grab all players from our nbaplayers table that are not owned by any team.
@@ -63,6 +127,8 @@
 	<link rel="stylesheet" type="text/css" href="AvailablePlayersStyle.css"/>
 </head>
 <body>
+	
+
 	<?php if($isTeamNotCreated): ?>
 		<p>You need to create a team before you can add players.</p>
 	<?php endif ?>
@@ -72,7 +138,29 @@
 	<?php endif ?>
 
 	<?php if($userCanAddPlayers): ?>
-		<h1>Available Players</h1>
+			<h1>Available Players</h1>
+			<!-- ADD THE RADIO BUTTONS FOR POSITIONAL CATAGORIES -->
+		<form action="AvailablePlayers.php" method="POST">
+			<fieldset>
+				<p>Choose a position catagory:</p>
+				<select name="positions" id="positions">
+					<!-- We can leave the value as blank and this will simply return all values of that column applying no condition to the search. -->
+					<option value="">All Positions</option>
+					<option value="G">Guard</option>
+					<option value="F">Forward</option>
+					<option value="C">Center</option>
+					<option value="G-F">Guard and Forward</option>
+					<option value="F-G">Forward and Guard</option>
+					<option value="F-C">Forward and Center</option>
+					<option value="C-F">Center and Forward</option>
+				</select>
+			</fieldset>
+			
+
+			<label>search by player name:</label>
+			<input type="text" name="searchValue" id="searchValue">
+			<input type="submit" name="Search" value="Search">
+		</form>
 
 		<!-- This table will display all nbaplayers that are available to be added to a team. -->
 		<table>
@@ -82,9 +170,9 @@
 				<th>MIN</th>
 				<th>FT%</th>
 				<th>eFG%</th>
-				<th>PTS</th>
-				<th>REB</th>
-				<th>AST</th>
+				<th><a href="AvailablePlayers.php?orderValue=PTS">PTS</a></th>
+				<th><a href="AvailablePlayers.php?orderValue=REB">REB</a></th>
+				<th><a href="AvailablePlayers.php?orderValue=AST">AST</a></th>
 				<th>STL</th>
 				<th>BLK</th>
 				<th>ADD PLAYER</th>

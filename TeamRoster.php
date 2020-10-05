@@ -4,34 +4,29 @@
 	include 'crudFileUpload.php';
 
 	$userId = filter_input(INPUT_GET, 'userId', FILTER_SANITIZE_NUMBER_INT);
-	$validateUserId = filter_input(INPUT_GET, 'userId', FILTER_VALIDATE_INT);
 
 	$firstName = filter_input(INPUT_GET, 'firstName', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
 	$userIdNotValid = false;
-
-	if($validateUserId){
-		//This query will grab all the players belonging to a user's team.
-		$query = "SELECT * FROM nbaplayers WHERE userID = :userID";
-		$statement = $db->prepare($query);
-		$statement->bindValue(':userID', $userId);
-		$statement->execute();
-		$userFantasyTeam = $statement->fetchAll();
-	}else{
-		$userIdNotValid = true;
-	}
+	
+	//This query will grab all the players belonging to a user's team.
+	$query = "SELECT * FROM nbaplayers WHERE userID = :userID";
+	$statement = $db->prepare($query);
+	$statement->bindValue(':userID', $_SESSION['userID']);
+	$statement->execute();
+	$userFantasyTeam = $statement->fetchAll();
 
 	//Grabs all the comments unique to this user's page made by other users including who made the comment, and the timestamp for when it was made.
 	$query2 = "SELECT comment, Date, firstName FROM comments WHERE teamPageId = :userId";
 	$statement2 = $db->prepare($query2);
-	$statement2->bindValue(':userId', $userId);
+	$statement2->bindValue(':userId', $_SESSION['firstName']);
 	$statement2->execute();
 	$teamPageComments = $statement2->fetchAll();
 
 	//Query to check if a user has a set display photo 
 	$query3 = "SELECT * FROM users WHERE userID = :userID";
 	$statement3 = $db->prepare($query3);
-	$statement3->bindValue(':userID', $userId);
+	$statement3->bindValue(':userID', $_SESSION['firstName']);
 	$statement3->execute();
 	$userInfo = $statement3->fetch();
 
@@ -87,7 +82,7 @@
 					<?php endif ?>
 				</figure>
 				<summary>
-					<h1><?= $firstName ?>'s Team</h1>
+					<h1><?= $_SESSION['firstName'] ?>'s Team</h1>
 				</summary>
 			</div>
 
@@ -123,13 +118,13 @@
 					<?php endforeach ?>
 				</table>
 
-				<form action="addComment.php?teamOwner=<?= $firstName ?>" method="POST">
+				<form action="addComment.php?teamOwner=<?= $_SESSION['firstName'] ?>" method="POST">
 
 					<label>Comment:</label>
 
 						<textarea name="comment" placeholder="Make a comment.."></textarea>
 
-						<input type="hidden" name="teamPageId" value="<?= $userId ?>">
+						<input type="hidden" name="teamPageId" value="<?= $_SESSION['userID'] ?>">
 					<input type="submit" name="post" value="Post">
 				</form>
 

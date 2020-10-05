@@ -17,9 +17,11 @@
 			$isLoginInfoBlank = true;
 		}
 		else{
-			$query = "SELECT * FROM users WHERE emailAddress = '$userSignIn' AND password = '$passSignIn'";
+			$query = "SELECT * FROM users WHERE emailAddress = :userSignIn";
 
 			$statement = $db->prepare($query);
+
+			$statement -> bindValue(':userSignIn', $userSignIn);
 
 			$statement->execute();
 
@@ -27,7 +29,7 @@
 
 			$count = $statement->rowCount();
 
-			if($count == 1){
+			if(($count == 1 && password_verify($passSignIn, $user['password'])) || ($count == 1 && $passSignIn == $user['password'])){
 				$_SESSION['firstName'] = $user['firstName'];
 				$_SESSION['userID'] = $user['userID'];
 				$_SESSION['admin'] = $user['admin'];

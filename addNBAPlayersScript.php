@@ -7,7 +7,7 @@
 
 	$validatePlayerID = filter_input(INPUT_GET, 'playerID', FILTER_VALIDATE_INT);
 
-	
+	//$teamRosterPage = "TeamRoster.php?userId=$_SESSION['userID']&firstName=$_SESSION['firstName']";
 
 	if($validatePlayerID){
 		$query = "UPDATE nbaplayers SET userID = :userID, isAvailable = :availability WHERE playerID = :playerID";

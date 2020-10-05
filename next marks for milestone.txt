@@ -1,0 +1,3 @@
+sort: use an order by at least 3 columns 
+catagories would filtering to show ONLY what was selected using WHERE based on the catagory
+hashing passwords: hash it and then submit to db and then when calling to compare to user passsword unhash

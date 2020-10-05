@@ -9,6 +9,8 @@
 
 	$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
+	$encryptedPassword = password_hash($password, PASSWORD_DEFAULT);
+
 	$accountSignUpNotValid = false;
 
 	if(isset($_POST['Create'])){
@@ -21,7 +23,7 @@
 			$statement -> bindValue(':firstName', $firstName);
 			$statement -> bindValue(':lastName', $lastName);
 			$statement -> bindValue(':emailAddress', $emailAddress);
-			$statement -> bindValue(':password', $password);
+			$statement -> bindValue(':password', $encryptedPassword);
 
 			$statement -> execute();
 
